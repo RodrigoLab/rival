@@ -2,6 +2,7 @@ package rival.evolution.tree;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,6 +26,8 @@ import rival.evolution.geo.LocationInfo;
 public class RivalTree extends RandomTree {
 
 	final public Input<LocationInfo> locationInfoInput = new Input<>("location", "all location info");
+
+	private int[] locationInfo;
 	
 	public static final String LOCATION = "location";
 	
@@ -32,7 +35,7 @@ public class RivalTree extends RandomTree {
     public void initAndValidate() {
 		super.initAndValidate();
 //		root.SetRivalInfo();
-		
+		locationInfo = new int[nodeCount]; 
 		
 		String [] taxa = getTaxaNames();
 		for (int i = 0; i < taxa.length; i++) {
@@ -46,14 +49,18 @@ public class RivalTree extends RandomTree {
 //			throw new IllegalArgumentException("Location information count doesn't match with number of taxa ");
 //		}
 		
-		m_nodes[0].setMetaData(LOCATION, 10);
-		m_nodes[0].setMetaData("Temp", 100);
+		
+		
         
 	}
-	public void getAllMetaData(){
+	public int[] getAllMetaData(){
+		
 		for (int i = 0; i < m_nodes.length; i++) {
-			System.out.println(m_nodes[i].getMetaData(LOCATION));
+			
+			locationInfo[i] = (int) m_nodes[i].getMetaData(LOCATION);
 		}
+		System.out.println("GetAllMetaData: "+ Arrays.toString(locationInfo));
+		return locationInfo;
 	}
 	
 	@Override
