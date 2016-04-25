@@ -54,15 +54,4 @@ public class ReadLocFile {
 			throw e;
 		}
 	}
-	
-	public static void main(String args[]) throws Exception {
-		ReadLocFile locFile = new ReadLocFile();
-		locFile.readFile(args[0]);
-		for (int i=0; i<locFile.sampleIDs.size(); i++) {
-			System.out.println(locFile.sampleIDs.get(i) + " " + locFile.locations.get(i));
-		}
-		for (int i=0; i<locFile.sampleLoc.size(); i++) {
-			System.out.println(locFile.sampleLoc.get(i) + " " + locFile.sampleLat.get(i).toString()+ " " + locFile.sampleLong.get(i).toString());
-		}
-	}
 }
