@@ -3,20 +3,20 @@ import java.io.*;
 import java.util.*;
 
 public class ReadLocFile {
-	ArrayList<String> sampleIDs;
-	ArrayList<String> locations;
+	public ArrayList<String> sampleIDs;
+	public ArrayList<String> locations;
 	
-	ArrayList<String> sampleLoc;
-	ArrayList<Double> sampleLat;
-	ArrayList<Double> sampleLong;
+	public ArrayList<String> locName;
+	public ArrayList<Double> locLat;
+	public ArrayList<Double> locLong;
 	
 	void readFile(String fileName) throws IOException {
 		sampleIDs = new ArrayList<String>();
 		locations = new ArrayList<String>();
 		
-		sampleLoc = new ArrayList<String>();
-		sampleLat = new ArrayList<Double>();
-		sampleLong = new ArrayList<Double>();
+		locName = new ArrayList<String>();
+		locLat = new ArrayList<Double>();
+		locLong = new ArrayList<Double>();
 
 		Set<String> locSet = new HashSet<String>();
 		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
@@ -33,11 +33,11 @@ public class ReadLocFile {
 			    	locations.add(tokens[1]);
 		    	} else if (tokens.length==3) {
 		    		// add the sample location to sampleLoc
-		    		sampleLoc.add(tokens[0]);
+		    		locName.add(tokens[0]);
 		    		// add the sample latitude to sampleLat
-		    		sampleLat.add(Double.parseDouble(tokens[1]));
+		    		locLat.add(Double.parseDouble(tokens[1]));
 		    		// add the sample longitude to sampleLong
-		    		sampleLong.add(Double.parseDouble(tokens[2]));
+		    		locLong.add(Double.parseDouble(tokens[2]));
 			    	// also add the sample locations to the set (for validation in the next step)
 			    	locSet.add(tokens[0]);
 		    	} else {
