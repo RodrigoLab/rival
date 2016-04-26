@@ -1,25 +1,12 @@
 package rival.evolution.tree;
 
-import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Operator;
-import beast.core.StateNode;
-import beast.core.StateNodeInitialiser;
-import beast.core.util.Log;
-import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.RandomTree;
-import beast.evolution.tree.TraitSet;
-import beast.evolution.tree.Tree;
-import beast.evolution.tree.TreeInterface;
-import beast.util.TreeParser;
-import rival.evolution.geo.LocationInfo;
+import beast.util.HeapSort;
 import rival.io.ReadLocFile;
 
 @Description("Rival tree")
@@ -27,61 +14,180 @@ import rival.io.ReadLocFile;
 public class RivalTree extends RandomTree {
 
 	final public Input<ReadLocFile> locationInfoInput = new Input<>("locationFile", "all location info");
-
+	
 	private int[] locationInfo;
+
+	private int maxLocation;
+
+	private double[] intervals;
+	private double[] storedIntervals;
 	
+	private int[][] locationMatirx;
+	private int[][] storedLocationMatirx;
+
 	public static final String LOCATION = "location";
-	
+
 	@Override
-    public void initAndValidate() {
+	public void initAndValidate() {
 		super.initAndValidate();
 		
-		String [] taxon = getTaxaNames();
-//		root.SetRivalInfo();
-		//Parse ReadLocFile and map sample to location
+		String[] taxaNames = getTaxaNames();
+		// root.SetRivalInfo();
+		// Parse ReadLocFile and map sample to location
 		ReadLocFile readLocation = locationInfoInput.get();
-		
-		locationInfo = new int[nodeCount]; 
 
-
-//		TODO, check readLocationTaxaName matches taxon
-		for (int i = 0; i < taxon.length; i++) {
-			String taxa = taxon[i];
-			//TODO: implement these
-//			ReadLocFile.getLocationFromTaxa(taxa);
-			//populate node/location with metadata/location
-			
+		locationInfo = new int[nodeCount];
+		maxLocation = -1;
+		// TODO, check readLocationTaxaName matches taxon
+		for (int i = 0; i < taxaNames.length; i++) {
+			String taxa = taxaNames[i];
+			// TODO: implement these
+			// ReadLocFile.getLocationFromTaxa(taxa);
+			// populate node/location with metadata/location
+			int location = 0;
+			if(location >  maxLocation){
+				maxLocation = location;
+			}
 			System.out.println(taxa);
-		}
-		
-		//TODO: Add this back
-//		LocationInfo locationInfo = locationInfoInput.get();
-//		if( taxa.length != locationInfo.getLength() ){
-//			throw new IllegalArgumentException("Location information count doesn't match with number of taxa ");
-//		}
-		
-		
-		
-        
-	}
-	public int[] getAllMetaData(){
-		
-		for (int i = 0; i < m_nodes.length; i++) {
 			
-			locationInfo[i] = (int) m_nodes[i].getMetaData(LOCATION);
 		}
-		System.out.println("GetAllMetaData: "+ Arrays.toString(locationInfo));
-		return locationInfo;
+		 maxLocation = 3;
+		 
+		 locationMatirx = new int[internalNodeCount][maxLocation];
+		 storedLocationMatirx = new int[internalNodeCount][maxLocation];
+		 
+		 intervals = new double[internalNodeCount];
+		 storedIntervals = new double[internalNodeCount];
+		
+
+		// TODO: Add this back
+		// LocationInfo locationInfo = locationInfoInput.get();
+		// if( taxa.length != locationInfo.getLength() ){
+		// throw new IllegalArgumentException("Location information count
+		// doesn't match with number of taxa ");
+		// }
+
 	}
 	
+	
+	public void calculateNodeInfo(){
+		
+        int[] locationArray = getAllLocationData();
+        
+        
+//        TreeIntervals ti = new TreeIntervals(this);
+//        System.out.println(ti.getIntervalCount());
+//        System.out.println(toString());
+//        double[] intervals = new double[nodeCount];
+//        ti.getIntervals(intervals);
+        
+
+        double[] allNodeHeight = collectIntervals();
+        int[] indices = new int[nodeCount];
+        HeapSort.sort(allNodeHeight, indices);
+        
+        System.out.println(Arrays.toString(allNodeHeight));
+        System.out.println(Arrays.toString(indices));
+        System.out.println(Arrays.toString(locationArray));
+        
+        int calculationStep = 0;
+        Arrays.fill(locationMatirx[calculationStep], 0);
+        Node node = getNode(indices[nodeCount-1]);
+        locationMatirx[calculationStep][locationArray[indices[nodeCount-1]]]++;
+        
+        
+//        System.out.println("NodeHeight: " +calculationStep +"\t"+ allNodeHeight[indices[nodeCount-1]]  +"\t"+ 
+//				Arrays.toString(locationMatirx[calculationStep]) + "\t"+ Arrays.toString(intervals) + "\n");
+        
+        for (int i = (nodeCount -1); i > (leafNodeCount) ; i--) {
+        	
+        	node = getNode(indices[i]);
+        	int nodeNr = node.getNr();
+        	int left = node.getLeft().getNr();
+        	int right  = node.getRight().getNr();
+//			System.out.println(times[i] +"\t"+ times[indices[i]] +"\t"+ node.getHeight());
+			
+			int locationCurrent = locationArray[nodeNr];
+			int locationLeft = locationArray[left];
+			int locationRight = locationArray[right];
+			
+			
+//			System.out.println(locationCurrent +"\t"+ locationLeft +"\t"+ locationRight);
+//        	if(i != getLeafNodeCount()){
+        		System.arraycopy(locationMatirx[calculationStep], 0, locationMatirx[++calculationStep], 0, maxLocation);
+	        	
+				if(locationCurrent != locationRight){
+					locationMatirx[calculationStep][locationRight]++;
+				}
+				else if(locationCurrent != locationLeft){
+					locationMatirx[calculationStep][locationLeft]++;
+				}
+				else if(locationLeft == locationRight){
+					//Migrate to the same place
+					locationMatirx[calculationStep][locationLeft]++;
+				}
+				intervals[calculationStep] = allNodeHeight[indices[i]] - allNodeHeight[indices[i-1]];
+//        	}
+        	
+        	
+//			System.out.println("NodeEND: calc: " +calculationStep +"\t"+ allNodeHeight[indices[i]]  +"\t"+ 
+//					Arrays.toString(locationMatirx[calculationStep]) + "\t"+ Arrays.toString(intervals) + "\n");
+        }
+			
+		
+	}
+
+
+	public double[] getIntervals() {
+		return intervals;
+	}
+
+
+	public int[][] getLocationMatirx() {
+		return locationMatirx;
+	}
+
+
+	
+	
+	public int[] getAllLocationData() {
+
+		for (int i = 0; i < m_nodes.length; i++) {
+			locationInfo[i] = (int) m_nodes[i].getMetaData(LOCATION);
+		}
+//		System.out.println("GetAllMetaData: " + Arrays.toString(locationInfo));
+		return locationInfo;
+	}
+
 	@Override
 	protected void store() {
 		super.store();
+		for (int i = 0; i < locationMatirx.length; i++) {
+			System.arraycopy(locationMatirx[i], 0, storedLocationMatirx[i], 0, maxLocation);
+		}
+		System.arraycopy(intervals, 0, storedIntervals, 0, intervals.length);
 	}
 
 	@Override
 	public void restore() {
 		super.restore();
+		for (int i = 0; i < locationMatirx.length; i++) {
+			int[] temp = storedLocationMatirx[i];
+			storedLocationMatirx[i] = locationMatirx[i];
+			locationMatirx[i] = temp;
+		}
+		double[] temp = storedIntervals;
+		storedIntervals = intervals;
+		intervals = temp;
 	}
 
+	
+	protected double[] collectIntervals(){//, int[] childCounts) {
+        Node[] nodes = getNodesAsArray();
+        double[] intervals = new double[nodes.length];
+        for (int i = 0; i < nodes.length; i++) {
+            intervals[i] = nodes[i].getHeight();
+        }
+        return intervals;
+    }
 }
