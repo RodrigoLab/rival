@@ -23,8 +23,8 @@ public class RivalTree extends RandomTree {
 	private double[] intervals;
 	private double[] storedIntervals;
 
-	private int[][] locationMatrix;
-	private int[][] storedLocationMatirx;
+	private int[][] occupationMatrix;
+	private int[][] storedOccupationMatrix;
 
 	private int[] indices;
 
@@ -57,8 +57,8 @@ public class RivalTree extends RandomTree {
 //		maxLocation = 3;
 		System.out.println(maxLocation);
 		System.out.println(Arrays.toString(locationInfo));
-		locationMatrix = new int[internalNodeCount][maxLocation];
-		storedLocationMatirx = new int[internalNodeCount][maxLocation];
+		occupationMatrix = new int[internalNodeCount][maxLocation];
+		storedOccupationMatrix = new int[internalNodeCount][maxLocation];
 
 		intervals = new double[internalNodeCount];
 		storedIntervals = new double[internalNodeCount];
@@ -76,7 +76,7 @@ public class RivalTree extends RandomTree {
 	public void calculateNodeInfo() {
 
 		int[] locationArray = getAllLocationData();
-		System.out.println(Arrays.toString(locationArray));
+//		System.out.println(Arrays.toString(locationArray));
 		// TreeIntervals ti = new TreeIntervals(this);
 		// System.out.println(ti.getIntervalCount());
 		// System.out.println(toString());
@@ -92,13 +92,13 @@ public class RivalTree extends RandomTree {
 //		System.out.println(Arrays.toString(locationArray));
 
 		int calculationStep = 0;
-		Arrays.fill(locationMatrix[calculationStep], 0);
+		Arrays.fill(occupationMatrix[calculationStep], 0);
 		Node node = getNode(indices[nodeCount - 1]);
-		locationMatrix[calculationStep][locationArray[indices[nodeCount - 1]]]++;
+		occupationMatrix[calculationStep][locationArray[indices[nodeCount - 1]]]++;
 
 		// System.out.println("NodeHeight: " +calculationStep +"\t"+
 		// allNodeHeight[indices[nodeCount-1]] +"\t"+
-		// Arrays.toString(locationMatirx[calculationStep]) + "\t"+
+		// Arrays.toString(locationMatrix[calculationStep]) + "\t"+
 		// Arrays.toString(intervals) + "\n");
 
 		for (int i = (nodeCount - 1); i > (leafNodeCount); i--) {
@@ -117,15 +117,15 @@ public class RivalTree extends RandomTree {
 			// System.out.println(locationCurrent +"\t"+ locationLeft +"\t"+
 			// locationRight);
 			// if(i != getLeafNodeCount()){
-			System.arraycopy(locationMatrix[calculationStep], 0, locationMatrix[++calculationStep], 0, maxLocation);
+			System.arraycopy(occupationMatrix[calculationStep], 0, occupationMatrix[++calculationStep], 0, maxLocation);
 
 			if (locationCurrent != locationRight) {
-				locationMatrix[calculationStep][locationRight]++;
+				occupationMatrix[calculationStep][locationRight]++;
 			} else if (locationCurrent != locationLeft) {
-				locationMatrix[calculationStep][locationLeft]++;
+				occupationMatrix[calculationStep][locationLeft]++;
 			} else if (locationLeft == locationRight) {
 				// Migrate to the same place
-				locationMatrix[calculationStep][locationLeft]++;
+				occupationMatrix[calculationStep][locationLeft]++;
 			}
 			intervals[calculationStep] = allNodeHeight[indices[i]] - allNodeHeight[indices[i - 1]];
 			// }
@@ -144,8 +144,8 @@ public class RivalTree extends RandomTree {
 		return intervals;
 	}
 
-	public int[][] getLocationMatrix() {
-		return locationMatrix;
+	public int[][] getOccupationMatrix() {
+		return occupationMatrix;
 	}
 
 	public boolean checkTreeLocation() {
@@ -207,8 +207,8 @@ public class RivalTree extends RandomTree {
 	@Override
 	protected void store() {
 		super.store();
-		for (int i = 0; i < locationMatrix.length; i++) {
-			System.arraycopy(locationMatrix[i], 0, storedLocationMatirx[i], 0, maxLocation);
+		for (int i = 0; i < occupationMatrix.length; i++) {
+			System.arraycopy(occupationMatrix[i], 0, storedOccupationMatrix[i], 0, maxLocation);
 		}
 		System.arraycopy(intervals, 0, storedIntervals, 0, intervals.length);
 	}
@@ -216,10 +216,10 @@ public class RivalTree extends RandomTree {
 	@Override
 	public void restore() {
 		super.restore();
-		for (int i = 0; i < locationMatrix.length; i++) {
-			int[] temp = storedLocationMatirx[i];
-			storedLocationMatirx[i] = locationMatrix[i];
-			locationMatrix[i] = temp;
+		for (int i = 0; i < occupationMatrix.length; i++) {
+			int[] temp = storedOccupationMatrix[i];
+			storedOccupationMatrix[i] = occupationMatrix[i];
+			occupationMatrix[i] = temp;
 		}
 		double[] temp = storedIntervals;
 		storedIntervals = intervals;

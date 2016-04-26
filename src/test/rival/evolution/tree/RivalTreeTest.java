@@ -73,7 +73,7 @@ public class RivalTreeTest {
 //                "trait", dates);
                 );
         System.out.println(Arrays.toString(tree.getIntervals() ) );
-		int[][] locationMatrix = tree.getLocationMatrix();
+		int[][] locationMatrix = tree.getOccupationMatrix();
 		for (int i = 0; i < locationMatrix.length; i++) {
 			System.out.println(Arrays.toString(locationMatrix[i]));
 		}

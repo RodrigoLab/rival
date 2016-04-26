@@ -12,7 +12,7 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Taxon;
 
 @Description("Calculate dispersal kernel using geo-distance and dispersion parameter")
-public abstract class AbstractDispersalKernel extends CalculationNode{
+public abstract class DispersalKernel extends CalculationNode{
 
 	
 	final public Input<double[][]> distanceMatrixInput = new Input<>
