@@ -1,12 +1,9 @@
 package test.rival.evolution.tree;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
-
-import javax.swing.plaf.synth.SynthSeparatorUI;
-import javax.swing.text.TabableView;
 
 import org.junit.Test;
 
@@ -14,13 +11,10 @@ import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Node;
-import beast.evolution.tree.RandomTree;
-import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.evolution.tree.coalescent.TreeIntervals;
 import beast.util.HeapSort;
-import beast.util.TreeParser;
 //import junit.framework.TestCase;
 import rival.evolution.tree.RivalTree;
 
@@ -133,16 +127,16 @@ public class RivalTreeTest {
         
         System.out.println(Arrays.toString(locationArray));
         int maxLocation = 3;
-        int[][] locationMatirx = new int[tree.getInternalNodeCount()][maxLocation];
+        int[][] locationMatrix = new int[tree.getInternalNodeCount()][maxLocation];
         
         int calculationCount = 0;
         Node node = tree.getNode(indices[nodeCount-1]);
-        locationMatirx[calculationCount][locationArray[indices[nodeCount-1]]]++;
-        System.out.println(calculationCount +"\t"+ Arrays.toString(locationMatirx[calculationCount]));
+        locationMatrix[calculationCount][locationArray[indices[nodeCount-1]]]++;
+        System.out.println(calculationCount +"\t"+ Arrays.toString(locationMatrix[calculationCount]));
         for (int i = (nodeCount -1); i > (tree.getLeafNodeCount()-1) ; i--) {
         	System.out.println("Node: " + i +"\t"+ indices[i]);
         	if(i != tree.getLeafNodeCount()){
-        		System.arraycopy(locationMatirx[calculationCount], 0, locationMatirx[++calculationCount], 0, maxLocation);
+        		System.arraycopy(locationMatrix[calculationCount], 0, locationMatrix[++calculationCount], 0, maxLocation);
         	}
         	
 //        	System.out.println(calculationCount +"\t"+ Arrays.toString(locationMatirx[calculationCount]));
@@ -160,21 +154,21 @@ public class RivalTreeTest {
 			System.out.println(locationCurrent +"\t"+ locationLeft +"\t"+ locationRight);
 			
 			if(locationCurrent != locationRight){
-				locationMatirx[calculationCount][locationRight]++;
+				locationMatrix[calculationCount][locationRight]++;
 			}
 			if(locationCurrent != locationLeft){
-				locationMatirx[calculationCount][locationLeft]++;
+				locationMatrix[calculationCount][locationLeft]++;
 			}
 			if(locationLeft == locationRight){
 				//Migrate to the same place
-				locationMatirx[calculationCount][locationLeft]++;
+				locationMatrix[calculationCount][locationLeft]++;
 			}
 			
 			double height = tree.getNode(indices[i]).getHeight();
 			double deltaHeight = height - tree.getNode(indices[i-1]).getHeight();
 			
 			System.out.println("NodeHeight: " + height +"\t"+ 
-					calculationCount +"\t"+ deltaHeight +"\t"+ Arrays.toString(locationMatirx[calculationCount]));
+					calculationCount +"\t"+ deltaHeight +"\t"+ Arrays.toString(locationMatrix[calculationCount]));
 			System.out.println();
 			
 		}
@@ -213,7 +207,6 @@ public class RivalTreeTest {
         ti.getCoalescentTimes(ct);
         System.out.println(Arrays.toString(ct));
      
-        
 //        ((5:3.8345580927383667,4:3.8345580927383667)6:2.1642699030246364,((0:0.45241738192271774,3:0.45241738192271774)7:0.012894428733463859,(1:0.021157885660620927,2:0.021157885660620927)8:0.44415392499556067)9:5.533516185106821)10:0.0
 //
 //        3.8345580927383667
@@ -226,6 +219,10 @@ public class RivalTreeTest {
 //coalescent time
 //        [0.021157885660620927, 0.45241738192271774, 0.4653118106561816, 3.8345580927383667, 5.998827995763003, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
+    	//@Test
+        System.out.println("Result from checking tree location (must be true): " + checkTreeLocation(tree) );
+		parent.setMetaData(RivalTree.LOCATION, 2);
+        System.out.println("Result from checking tree location (must be false): " + checkTreeLocation(tree) );
         
 	}
 	protected static void collectTimes(Tree tree, double[] times, int[] childCounts) {
@@ -235,5 +232,21 @@ public class RivalTreeTest {
             times[i] = node.getHeight();
             childCounts[i] = node.isLeaf() ? 0 : 2;
         }
+    }
+	
+	protected static boolean checkTreeLocation(RivalTree tree) {
+		List<Node> internalNodes = tree.getInternalNodes();
+		int[] locationArray = tree.getAllMetaData();
+		int nodeNr, left, right ;
+	    for (int i = 0; i < internalNodes.size(); i++) {
+	    	Node node = internalNodes.get(i);
+	    	nodeNr = node.getNr();
+	    	left = node.getLeft().getNr();
+	    	right  = node.getRight().getNr();
+            if ( locationArray[left]!=locationArray[nodeNr] && locationArray[right]!=locationArray[nodeNr] ){
+            	return false;
+            }
+        }
+	    return true;
     }
 }
