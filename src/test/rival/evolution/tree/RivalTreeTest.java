@@ -45,16 +45,16 @@ public class RivalTreeTest {
         data.initByName("sequence", human, "sequence", chimp, "sequence", bonobo, "sequence", gorilla, "sequence", orangutan, "sequence", siamang,
                 "dataType", "nucleotide"
         );
-        
-		TreeParser tp = new TreeParser();
-        tp.initByName("taxa", data,
-				"newick",
-				"((((human:0.024003,(chimp:0.010772,bonobo:0.010772):0.013231):0.012035,gorilla:0.036038):0.033087000000000005,orangutan:0.069125):0.030456999999999998,siamang:0.099582);",
-				"IsLabelledNewick", true);
-		TreeIntervals tpi = new TreeIntervals(tp);
-        double[] temp = new double[tp.getNodeCount()];
-        tpi.getIntervals(temp);
-        System.out.println(Arrays.toString(temp));
+//        
+//		TreeParser tp = new TreeParser();
+//        tp.initByName("taxa", data,
+//				"newick",
+//				"((((human:0.024003,(chimp:0.010772,bonobo:0.010772):0.013231):0.012035,gorilla:0.036038):0.033087000000000005,orangutan:0.069125):0.030456999999999998,siamang:0.099582);",
+//				"IsLabelledNewick", true);
+//		TreeIntervals tpi = new TreeIntervals(tp);
+//        double[] temp = new double[tp.getNodeCount()];
+//        tpi.getIntervals(temp);
+//        System.out.println(Arrays.toString(temp));
         
      
         
@@ -66,7 +66,7 @@ public class RivalTreeTest {
         RivalTree tree = new RivalTree();
 //        TraitSet dates = getDates(taxa);
         ConstantPopulation constant = new ConstantPopulation();
-        constant.initByName("popSize", new RealParameter("5.0"));
+        constant.initByName("popSize", new RealParameter("500.0"));
         tree.initByName(
         		"taxa", data,
                 "populationModel", constant
@@ -165,7 +165,10 @@ public class RivalTreeTest {
 			if(locationCurrent != locationLeft){
 				locationMatirx[calculationCount][locationLeft]++;
 			}
-			
+			if(locationLeft == locationRight){
+				//Migrate to the same place
+				locationMatirx[calculationCount][locationLeft]++;
+			}
 			
 			double height = tree.getNode(indices[i]).getHeight();
 			double deltaHeight = height - tree.getNode(indices[i-1]).getHeight();

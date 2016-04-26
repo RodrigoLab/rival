@@ -20,12 +20,13 @@ import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeInterface;
 import beast.util.TreeParser;
 import rival.evolution.geo.LocationInfo;
+import rival.io.ReadLocFile;
 
 @Description("Rival tree")
 
 public class RivalTree extends RandomTree {
 
-	final public Input<LocationInfo> locationInfoInput = new Input<>("location", "all location info");
+	final public Input<ReadLocFile> locationInfoInput = new Input<>("locationFile", "all location info");
 
 	private int[] locationInfo;
 	
@@ -34,13 +35,23 @@ public class RivalTree extends RandomTree {
 	@Override
     public void initAndValidate() {
 		super.initAndValidate();
-//		root.SetRivalInfo();
-		locationInfo = new int[nodeCount]; 
 		
-		String [] taxa = getTaxaNames();
-		for (int i = 0; i < taxa.length; i++) {
-			String string = taxa[i];
-			System.out.println(string);
+		String [] taxon = getTaxaNames();
+//		root.SetRivalInfo();
+		//Parse ReadLocFile and map sample to location
+		ReadLocFile readLocation = locationInfoInput.get();
+		
+		locationInfo = new int[nodeCount]; 
+
+
+//		TODO, check readLocationTaxaName matches taxon
+		for (int i = 0; i < taxon.length; i++) {
+			String taxa = taxon[i];
+			//TODO: implement these
+//			ReadLocFile.getLocationFromTaxa(taxa);
+			//populate node/location with metadata/location
+			
+			System.out.println(taxa);
 		}
 		
 		//TODO: Add this back
