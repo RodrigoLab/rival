@@ -10,7 +10,7 @@ public class ReadLocFile {
 	public ArrayList<Double> locLat;
 	public ArrayList<Double> locLong;
 	
-	void readFile(String fileName) throws IOException {
+	public void readFile(String fileName) throws IOException {
 		sampleIDs = new ArrayList<String>();
 		locations = new ArrayList<String>();
 		
@@ -51,7 +51,7 @@ public class ReadLocFile {
 		    	}
 		    }
 		} catch (IOException e) {
-			throw e;
+			e.printStackTrace();
 		}
 	}
 }
