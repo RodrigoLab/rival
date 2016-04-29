@@ -8,7 +8,7 @@ import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Taxon;
 
-public class DispersalKernelRandom extends AbstractDispersalKernel {
+public class DispersalKernelRandom extends DispersalKernel {
 
 	final public Input<RealParameter> randomParameterInput = new Input<>("param", 
 			"semi-random parameter for testing purpose");

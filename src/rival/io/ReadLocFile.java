@@ -13,9 +13,9 @@ public class ReadLocFile {
 	private HashMap<String, Integer> sampleName2ID;
 	private HashMap<String, Integer> locName2ID; 
 	
-	public int getLocationFromTaxa(String taxa) throws Exception {
-		if (!sampleName2ID.containsKey(taxa))
-			throw new IOException("Error! Taxa " + taxa + " does not exist!");
+	public int getLocationFromTaxa(String taxa) {//throws Exception {
+//		if (!sampleName2ID.containsKey(taxa))
+//			throw new IOException("Error! Taxa " + taxa + " does not exist!");
 		int sampleID = sampleName2ID.get(taxa).intValue();
 		return locName2ID.get(sampleLoc.get(sampleID)).intValue();
 	}
