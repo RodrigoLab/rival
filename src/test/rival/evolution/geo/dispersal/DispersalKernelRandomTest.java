@@ -40,7 +40,6 @@ public class DispersalKernelRandomTest {
 		dkr.initAndValidate();
 		
 		
-		
 		double[][] kernel = dkr.getKernel();
 		for (int i = 0; i < distMat.length; i++) {
 			double[] ds = distMat[i];
